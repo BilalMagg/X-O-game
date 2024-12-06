@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;1,500&display=swap');
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "poppins",sans-serif;
+}
+
+:root {
+  --BORDER: 1px solid #000;
+}
+
+body {
+  height: 100vh;
+  background-color: rgb(40, 89, 67);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+section {
+  border: var(--BORDER);
+  width: min(500px,80%);
+  height: min(700px,90%);
+  border-radius: 25px;
+  background-color: rgb(119, 175, 156);
+  color: #000;
+  box-shadow: 0 5px 10px rgba(0, 0, 0,0.5);
+}
+
+h1 {
+  text-transform: capitalize;
+  text-align: center;
+  background-color: rgb(170, 252, 184);
+  border-radius: 24px 24px 0 0;
+  padding: 15px 0;
+  color:rgb(40, 89, 67);
+  font-size: 2.2rem;
+}
+
+.layout {
+  padding: 10px 5px;
+  height: 70%;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: repeat(3,1fr);
+  /* border: var(--BORDER); */
+  background-color: rgb(215, 255, 241);
+  gap: 5px;
+}
+
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background-color: rgb(25, 55, 41);
+  cursor: pointer;
+  height: 100%;
+}
+
+.box i {
+  font-size: 5em;
+  color: #fff;
+}
+
+.marked {
+  background-color: rgb(170, 252, 184);
+  i {
+    color: #000;
+  }
+}
+
+.box:not(.marked):hover {
+  background-color: rgba(40, 89, 67,0.8);;
+  transition: background-color .3s linear;
+}
+
+.score {
+  text-align: center;
+  font-size: 1.7rem;
+  text-decoration: underline;
+}
+
+.player-score {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.score-count {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.btns {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 10px;
+  gap: 20px;
+}
+
+.btns {
+    button {
+    font-size: 1.3rem;
+    font-weight: 600;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 15px;
+    border: none;
+    background-color: #aafcb8;
+    color:#000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0,0.5);
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+}
