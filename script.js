@@ -7,6 +7,7 @@ let friendCount = 0;
 const computerBtn = document.querySelector('.computer');
 let computerCount = 0;
 const resetBtn = document.querySelector('.reset');
+const difficulty = document.querySelector('.difficulty');
 let turnPlayer = 1;
 let opponent = 2;
 const table = [[0,0,0],[0,0,0],[0,0,0]];
@@ -17,7 +18,6 @@ function switchPlayer(opponent) {
 
 function fillBox(id,icon) {
   const box = document.getElementById(`${id}`);
-  console.log(opponent);
   
   if (box.classList.contains('marked')) {
     turnPlayer = switchPlayer(opponent);
@@ -40,6 +40,10 @@ function fillBox(id,icon) {
 
   const result = test();
   if(result) {
+    const check = test2();
+    document.getElementById(`${check[0]}`).classList.add('win');
+    document.getElementById(`${check[1]}`).classList.add('win');
+    document.getElementById(`${check[2]}`).classList.add('win');
     // turnPlayer = 1;
     if (opponent === 2) {
       friendlyBtn.innerHTML = 'Play Again';
@@ -59,31 +63,62 @@ document.querySelectorAll('.box').forEach((box) => {
     
     fillBox(box.id,(turnPlayer===1)? 'x':'circle');
     turnPlayer = switchPlayer(opponent);
-    if(opponent===3) {
-      // debugger;
-    const move = findBestMove()
-    if (move.row=== -1 || move.col=== -1) {
-      turnPlayer = switchPlayer(opponent);
+
+    if(test() || isBoardFull()) {
       return;
     }
-    fillBox(move.row*3 + move.col + 1, 'circle');
-    turnPlayer = switchPlayer(opponent);
+
+    if(opponent===3) {
+      // debugger;
+      setTimeout(() => {
+
+        console.log(difficultyLevel);
+        const move = (difficultyLevel==1)? findBestMove() : findRandomMove();
+        if (move.row=== -1 || move.col=== -1) {
+          turnPlayer = switchPlayer(opponent);
+          return;
+        }
+        fillBox(move.row*3 + move.col + 1, 'circle');
+        turnPlayer = switchPlayer(opponent);
+      }, 500);
     }
   })
 })
 
+function test2(board=table) {
+  for (let i = 0; i < 3; i++) {
+      if (board[i][0]===board[i][1] && board[i][1]===board[i][2] && board[i][2]!==0) {
+        return [3*i+1,3*i+2,3*i+3];
+      }
+      if(board[0][i]===board[1][i] && board[1][i]===board[2][i] && board[2][i]!==0) {
+        return [i+1,3+i+1,6+i+1];
+      }
+  }
+
+  if(board[0][0]===board[1][1] && board[1][1]===board[2][2] && board[2][2]!==0) {
+    return [1,5,9];
+  }
+  if(board[0][2]===board[1][1] && board[1][1]===board[2][0] && board[2][0]!==0) {
+    return [3,5,7];
+  }
+  return 0;
+}
+
 function test(board=table) {
   for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      if (board[i][0]===board[i][1] && board[i][1]===board[i][2] && board[i][2]!==0)
+      if (board[i][0]===board[i][1] && board[i][1]===board[i][2] && board[i][2]!==0) {
         return board[i][1];
-      if(board[0][j]===board[1][j] && board[1][j]===board[2][j] && board[2][j]!==0)
-        return board[0][j];
-      if(board[0][0]===board[1][1] && board[1][1]===board[2][2] && board[2][2]!==0)
-        return board[0][0];
-      if(board[0][2]===board[1][1] && board[1][1]===board[2][0] && board[2][0]!==0)
-        return board[0][2];
-    }
+      }
+      if(board[0][i]===board[1][i] && board[1][i]===board[2][i] && board[2][i]!==0) {
+        return board[0][i];
+      }
+  }
+
+  if(board[0][0]===board[1][1] && board[1][1]===board[2][2] && board[2][2]!==0) {
+    return board[0][0];
+  }
+  if(board[0][2]===board[1][1] && board[1][1]===board[2][0] && board[2][0]!==0) {
+    return board[0][2];
   }
   return 0;
 }
@@ -92,6 +127,7 @@ function reset() {
   document.querySelectorAll('.box').forEach((box) => {
     box.innerHTML = '';
     box.classList.remove('marked');
+    box.classList.remove('win');
     for (let i = 0; i < 3; i++) 
       for (let j = 0; j < 3; j++)
         table[i][j] = 0;
@@ -120,8 +156,25 @@ friendlyBtn.addEventListener('click',() => {
   opponent = 2;
 });
 
+let difficultyLevel = 0;
 computerBtn.addEventListener('click',() => {
   turnPlayer = 1;
+  difficulty.innerHTML = `
+      <button class="difficulty-easy">Easy</button>
+      <button class="difficulty-hard">Hard</button>
+    `
+
+  document.querySelector('.difficulty-easy').addEventListener('click', ()=> {
+    difficultyLevel = 0;
+    difficulty.innerHTML = ``;
+  })
+  
+  document.querySelector('.difficulty-hard').addEventListener('click', ()=> {
+    difficultyLevel = 1;
+    console.log(difficultyLevel);
+    difficulty.innerHTML = ``;
+  })
+
   computerBtn.innerHTML = 'Computer';
   reset();
   document.querySelector('.player2').innerHTML = 'Computer:';
@@ -132,8 +185,8 @@ computerBtn.addEventListener('click',() => {
 
 function miniMax(board, depth, isMaximazing) {
   const score = test(board);
-  if(score===1) return -10+depth;
-  if(score===3) return 10-depth;
+  if(score===1) return -10 + depth;
+  if(score===3) return 10 - depth;
   if(isBoardFull(board)) return 0;
 
   let bestScore = isMaximazing ? -Infinity : Infinity;
@@ -143,7 +196,7 @@ function miniMax(board, depth, isMaximazing) {
       if (!board[i][j]) {
         board[i][j] = isMaximazing ? 3 : 1;
   
-        console.log('case');
+        // console.log(depth);
         
         const currentScore = miniMax(board,depth + 1,!isMaximazing);
         board[i][j] = 0;
@@ -163,11 +216,11 @@ function isBoardFull(board=table) {
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       if (board[i][j]===0) {
-        return 0;
+        return false;
       }
     }
   }
-  return 1;
+  return true;
 }
 
 function findBestMove(board=table) {
@@ -178,7 +231,7 @@ function findBestMove(board=table) {
     for (let j = 0; j < 3; j++) {
       if (board[i][j]===0) {
         board[i][j] = 3;
-        let moveVal = miniMax(board,0,true);
+        let moveVal = miniMax(board,0,false);
         board[i][j] = 0;
 
         if (moveVal > bestVal) {
@@ -191,4 +244,18 @@ function findBestMove(board=table) {
   }
 
   return bestMove;
+}
+
+function findRandomMove(board = table) {
+  const valideMove = [];
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (board[i][j]===0) {
+        valideMove.push({row : i,col : j});
+      }
+    }
+  }
+  randomIndex = (Math.floor((Math.random())*valideMove.length)%valideMove.length);
+  
+  return valideMove[randomIndex];
 }
