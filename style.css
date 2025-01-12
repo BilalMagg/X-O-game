@@ -120,7 +120,7 @@ h1 {
 }
 
 .difficulty {
-  border: var(--BORDER);
+  /* border: var(--BORDER); */
   display: flex;
   align-items: center;
   justify-content: space-evenly;

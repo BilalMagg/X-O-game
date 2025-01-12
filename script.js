@@ -20,13 +20,14 @@ function fillBox(id,icon) {
   const box = document.getElementById(`${id}`);
   
   if (box.classList.contains('marked')) {
-    turnPlayer = switchPlayer(opponent);
+    // turnPlayer = switchPlayer(opponent);
     return;
 
   } else {
     box.classList.add('marked');
     box.innerHTML = (icon === 'x')? xIcon : circleIcon;
     table[Math.floor((id-1)/3)][(id-1)%3] = turnPlayer;
+    turnPlayer = switchPlayer(opponent);
   }
 
   if(isBoardFull()) {
@@ -61,8 +62,10 @@ document.querySelectorAll('.box').forEach((box) => {
       return;
     }
     
+    if (box.classList.contains('marked')) {
+      return;
+    }
     fillBox(box.id,(turnPlayer===1)? 'x':'circle');
-    turnPlayer = switchPlayer(opponent);
 
     if(test() || isBoardFull()) {
       return;
@@ -72,14 +75,12 @@ document.querySelectorAll('.box').forEach((box) => {
       // debugger;
       setTimeout(() => {
 
-        console.log(difficultyLevel);
         const move = (difficultyLevel==1)? findBestMove() : findRandomMove();
         if (move.row=== -1 || move.col=== -1) {
           turnPlayer = switchPlayer(opponent);
           return;
         }
         fillBox(move.row*3 + move.col + 1, 'circle');
-        turnPlayer = switchPlayer(opponent);
       }, 500);
     }
   })
@@ -124,6 +125,7 @@ function test(board=table) {
 }
 
 function reset() {
+  resetButtons();
   document.querySelectorAll('.box').forEach((box) => {
     box.innerHTML = '';
     box.classList.remove('marked');
@@ -148,12 +150,12 @@ function score(Player) {
 
 friendlyBtn.addEventListener('click',() => {
   turnPlayer = 1;
-  friendlyBtn.innerHTML = 'Friendly';
+  difficulty.innerHTML = ``;
+  opponent = 2;
   reset();
   document.querySelector('.player2').innerHTML = 'Player 2:';
   document.querySelector('.count-2').innerHTML = friendCount;
   document.querySelector('.player1').innerHTML = playerVSFriendCount;
-  opponent = 2;
 });
 
 let difficultyLevel = 0;
@@ -171,11 +173,9 @@ computerBtn.addEventListener('click',() => {
   
   document.querySelector('.difficulty-hard').addEventListener('click', ()=> {
     difficultyLevel = 1;
-    console.log(difficultyLevel);
     difficulty.innerHTML = ``;
   })
 
-  computerBtn.innerHTML = 'Computer';
   reset();
   document.querySelector('.player2').innerHTML = 'Computer:';
   document.querySelector('.count-2').innerHTML = computerCount;
@@ -258,4 +258,9 @@ function findRandomMove(board = table) {
   randomIndex = (Math.floor((Math.random())*valideMove.length)%valideMove.length);
   
   return valideMove[randomIndex];
+}
+
+function resetButtons() {
+  friendlyBtn.innerHTML = 'Friendly';
+  computerBtn.innerHTML = 'Computer';
 }
